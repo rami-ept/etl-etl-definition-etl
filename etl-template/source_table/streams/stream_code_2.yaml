@@ -1,0 +1,39 @@
+source_endpoint: source_table/endpoints/endpoint_2.yaml
+target_endpoint: source_table/endpoints/endpoint_3.yaml
+processing_type: extract_wal_stream
+mapping:
+- target_field: id
+  method:
+    type: extract_json
+    field: message
+    json_path: '{payload,v_path,id}'
+- target_field: field_1
+  method:
+    type: extract_json
+    field: message
+    json_path: '{payload,v_path,field_1}'
+- target_field: field_2
+  method:
+    type: extract_json
+    field: message
+    json_path: '{payload,v_path,field_2}'
+- target_field: field_3
+  method:
+    type: extract_json
+    field: message
+    json_path: '{payload,v_path,field_3}'
+- target_field: field_4
+  method:
+    type: extract_json
+    field: message
+    json_path: '{payload,v_path,field_4}'
+- target_field: field_5
+  method:
+    type: extract_json
+    field: message
+    json_path: '{payload,v_path,field_5}'
+- target_field: field_6
+  method:
+    type: extract_before_json_data
+    field: message
+    json_path: '{before, field_6}'  

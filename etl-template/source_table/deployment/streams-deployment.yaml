@@ -1,0 +1,28 @@
+additional_params: &additional_params
+    load:
+        max_load_retry_count: 5
+    error:
+        max_error_retry_count: 5
+    garbage:
+        max_non_active_time_sec: 5
+        max_life_time_done_sec: 50
+        max_retried_life_sec: 50
+stream_deployments:
+    - stream_code_1:
+          stream_description: source_table/streams/stream_code_1.yaml
+          source_endpoint_deployment: endpoint_1_deployment
+          target_endpoint_deployment: endpoint_2_deployment
+          implementation_type: capture_wal_stream
+          deployment_meta:
+            database: local_name_db_name
+            schema: ods
+          additional_params: *additional_params
+    - stream_code_2:
+          stream_description: source_table/streams/stream_code_2.yaml
+          source_endpoint_deployment: endpoint_2_deployment
+          target_endpoint_deployment: endpoint_3_deployment
+          implementation_type: extract_wal_stream          
+          deployment_meta:
+             database: local_name_db_name
+             schema: ods
+          additional_params: *additional_params

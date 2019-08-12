@@ -1,0 +1,10 @@
+endpoints:
+    - endpoint_1:
+        description: source_table/endpoints/endpoint_1.yaml
+        type: wal
+    - endpoint_2:
+        description: source_table/endpoints/endpoint_2.yaml
+        type: cdc_step        
+    - endpoint_3:
+        description: source_table/endpoints/endpoint_3.yaml
+        type: ods_etl_step

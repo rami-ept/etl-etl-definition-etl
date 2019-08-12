@@ -1,0 +1,19 @@
+endpoint-deployments:
+    - endpoint_1_deployment:
+        endpoint: endpoint_1
+        deployment_parameters:
+            type: wal
+            database: source_database_name
+            schema: schema_name
+    - endpoint_2_deployment:
+        endpoint: endpoint_2
+        deployment_parameters:
+            type: postgres
+            database: local_name_db_name
+            schema: ods
+    - endpoint_3_deployment:
+        endpoint: endpoint_3
+        deployment_parameters:
+            type: postgres
+            database: local_name_db_name
+            schema: ods

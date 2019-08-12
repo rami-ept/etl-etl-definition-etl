@@ -1,0 +1,4 @@
+columns:
+- column:
+    name: message
+    type: jsonb   

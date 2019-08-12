@@ -1,0 +1,23 @@
+databases:
+    - source_database_name:
+        secrets:
+            user:
+                secret_name: secret-name-from-openshift
+            root:
+                secret_name: secret-name-from-openshift
+        location_kind: postgres                
+        schemas:
+            - schema_name:
+                type: postgres_source_ms
+                remote_databases_local_schemas:
+                    remote_database_name: local_name_db_name
+    - local_name_db_name:
+        secrets:
+            user:
+                secret_name: secret-name-from-openshift
+            root:
+                secret_name: secret-name-from-openshift
+        location_kind: postgres
+        schemas:
+            - ods:
+                type: etl_meta

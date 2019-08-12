@@ -1,0 +1,3 @@
+source_endpoint: source_table/endpoints/endpoint_1.yaml
+target_endpoint: source_table/endpoints/endpoint_2.yaml
+processing_type: capture_wal_stream

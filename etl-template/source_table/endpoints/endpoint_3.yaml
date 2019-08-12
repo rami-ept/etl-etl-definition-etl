@@ -1,0 +1,32 @@
+indexes:           
+    - index:
+        columns:
+            - column:
+                name: field_1
+                type: varchar(100)
+columns:
+    - column:
+        name: id
+        type: varchar(100)
+        constraints:
+            - primaryKey: true
+    - column:
+        name: field_1
+        type: varchar(100)
+    - column:
+        name: field_2
+        type: varchar(100)        
+    - column:
+        name: field_3
+        type: varchar(100)
+        constraints:
+            - nullable: false
+    - column:
+        name: field_4
+        type: varchar(100)
+    - column:
+        name: field_5
+        type: varchar(100)
+    - column:
+        name: field_6
+        type: jsonb  
