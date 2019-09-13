@@ -1,23 +1,107 @@
-databases:
-    - source_database_name:
-        secrets:
-            user:
-                secret_name: secret-name-from-openshift
-            root:
-                secret_name: secret-name-from-openshift
-        location_kind: postgres                
-        schemas:
-            - schema_name:
-                type: postgres_source_ms
-                remote_databases_local_schemas:
-                    remote_database_name: local_name_db_name
-    - local_name_db_name:
-        secrets:
-            user:
-                secret_name: secret-name-from-openshift
-            root:
-                secret_name: secret-name-from-openshift
-        location_kind: postgres
-        schemas:
-            - ods:
-                type: etl_meta
+# Copyright 2019 EPAM Systems.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+# See the License for the specific language governing permissions and
+# limitations under the License.
+kind: Template
+apiVersion: v1
+metadata:
+  name: ${IMAGE_NAME}
+  annotations:
+    description: Openshift template for ETL definition project deployment
+    template.openshift.io/provider-display-name: EPAM
+    template.openshift.io/support-url: https://www.epam.com
+objects:
+
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: ${SERVICE_ACCOUNT_NAME_ETL}
+
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    labels:
+      app: ${IMAGE_NAME}
+    name: ${IMAGE_NAME}-${SUFFIX}
+  spec:
+    serviceAccountName: ${SERVICE_ACCOUNT_NAME_ETL}
+    containers:
+      - command: ["sh", "-c", "/start/main_script.sh"]
+        image: "localhost:5000/${DEPLOY_IMAGE_NAME}:${DEPLOY_IMAGE_VERSION}"
+        imagePullPolicy: IfNotPresent
+        name: ${IMAGE_NAME}
+        workingDir: /etl-deployer
+        volumeMounts:
+          - mountPath: /etl-deployer
+            name: etl-deployer-data
+    initContainers:
+      - env:
+          - name: NEXUS_READ_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: nexus-read
+          - name: NEXUS_READ_PASS
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: nexus-read
+        image: "localhost:5000/${DEPLOY_IMAGE_NAME}:${DEPLOY_IMAGE_VERSION}"
+        command: ["sh", "-c", "wget --http-user=\"${NEXUS_READ_USER}\" --http-password=\"${NEXUS_READ_PASS}\" nexus:8081/repository/etl-group/\"${IMAGE_NAME}\"/\"${IMAGE_NAME}\"-\"${APP_VERSION}\".zip"]
+        imagePullPolicy: Always
+        restartPolicy: Never
+        name: init-etl
+        workingDir: /etl-deployer
+        volumeMounts:
+          - mountPath: /etl-deployer
+            name: etl-deployer-data
+    restartPolicy: Never
+    volumes:
+      - name: etl-deployer-data
+        emptyDir: {}
+
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: nexus-read
+  type: Opaque
+  data:
+    password: ZmFrZXVzZXI=
+    username: ZmFrZXVzZXI=
+
+parameters:
+- displayName: Name of repository that will be used to download artifacts. Service account should has the same name.
+  name: IMAGE_NAME
+  required: true
+- displayName: Version of artifacts to download
+  name: APP_VERSION
+  required: true
+- displayName: etl-deployer image name
+  name: DEPLOY_IMAGE_NAME
+  required: true
+  value: 'sd-etl-deployer'
+- displayName: etl-deployer image version
+  name: DEPLOY_IMAGE_VERSION
+  required: true
+  value: '0.1.0.27'
+- displayName: Current namespace
+  description: This parameter is dynamic. Value comes from deploy pipeline.
+  name: NAMESPACE
+  required: true
+- displayName: Service account name
+  name: SERVICE_ACCOUNT_NAME_ETL
+  required: true
+  value: sd-etl-deployer
+- displayName: Pod suffix
+  name: SUFFIX
+  generate: expression
+  from: "[a-z0-9]{5}"
